@@ -3,6 +3,9 @@
 
 from api.v1.auth.auth import Auth
 from base64 import b64decode, binascii
+from models.base import DATA
+from models.user import User
+from typing import TypeVar
 
 
 class BasicAuth(Auth):
@@ -36,3 +39,17 @@ class BasicAuth(Auth):
            (':' not in decoded_b64_auth_header)):
             return None, None
         return tuple(decoded_b64_auth_header.split(':'))
+
+    def user_object_from_credentials(self,
+                                     user_email: str,
+                                     user_pwd: str) -> TypeVar('User'):
+        """checks for user object"""
+        if not user_email or not user_pwd:
+            return None
+        User.load_from_file()
+        if 'User' not in DATA:
+            return None
+        user = User.search({'email': user_email})
+        if not user or not user[0].is_valid_password(user_pwd):
+            return None
+        return user[0]
