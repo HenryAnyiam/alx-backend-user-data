@@ -46,5 +46,6 @@ class SessionDBAuth(SessionExpAuth):
         user = UserSession.get(user_id)
         if user:
             user.remove()
-        del type(self).user_id_by_session_id[session]
-        return True
+            del type(self).user_id_by_session_id[session]
+            return True
+        return False
