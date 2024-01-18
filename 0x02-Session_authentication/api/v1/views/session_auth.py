@@ -2,14 +2,14 @@
 """module for session auth view
 """
 from api.v1.views import app_views
-from flask import make_response, jsonify, request
+from flask import make_response, jsonify, request, abort
 from models.user import User
 from models.base import DATA
 from os import getenv
 
 
 @app_views.route("/auth_session/login", methods=["POST"],
-                strict_slashes=False)
+                 strict_slashes=False)
 def login() -> str:
     """login user through session auth"""
     email = request.form.get("email")
@@ -29,3 +29,14 @@ def login() -> str:
     resp = make_response(user[0].to_json())
     resp.set_cookie(getenv('SESSION_NAME'), key_id)
     return resp
+
+
+@app_views.route("auth_session/logout", methods=["DELETE"],
+                 strict_slashes=False)
+def logout() -> str:
+    """logout user using session auth"""
+    from api.v1.app import auth
+    success = auth.destroy_session(request)
+    if not success:
+        abort(404)
+    return jsonify({}), 200
