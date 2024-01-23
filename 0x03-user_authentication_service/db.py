@@ -63,4 +63,4 @@ class DB:
                 elif not isinstance(value, str):
                     raise ValueError
                 setattr(user, key, value)
-        self._session.commit()
+                self._session.commit()
