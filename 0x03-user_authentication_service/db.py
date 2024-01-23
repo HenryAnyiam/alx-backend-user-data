@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from typing import Dict
 
 from user import Base, User
 
@@ -54,7 +53,7 @@ class DB:
             raise NoResultFound
         return result[0]
 
-    def update_user(self, user_id: int, **kwargs: Dict) -> None:
+    def update_user(self, user_id: int, **kwargs: dict) -> None:
         """update user"""
         user = self.find_user_by(id=user_id)
         for key, value in kwargs.items():
