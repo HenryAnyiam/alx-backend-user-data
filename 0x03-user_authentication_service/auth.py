@@ -75,5 +75,6 @@ class Auth:
         """clear a users session"""
         try:
             self._db.update_user(user_id, session_id=None)
+            return
         except NoResultFound, ValueError:
             return
