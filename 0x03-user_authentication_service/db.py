@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.exc import StatementError
 
 from user import Base, User
 
@@ -59,8 +58,9 @@ class DB:
         user = self.find_user_by(id=user_id)
         for key, value in kwargs.items():
             if hasattr(user, key):
-                attr = getattr(user, key)
-                if type(value) != type(attr):
+                if key == "id" and not isinstance(value, int):
+                    raise ValueError
+                elif not isinstance(value, str):
                     raise ValueError
                 setattr(user, key, value)
         self._session.commit()
