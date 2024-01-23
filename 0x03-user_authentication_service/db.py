@@ -60,6 +60,9 @@ class DB:
             if hasattr(user, key):
                 if key == "id" and not isinstance(value, int):
                     raise ValueError
+                elif ((key == "session_id" or key == "reset_token")
+                      and not value):
+                    pass
                 elif not isinstance(value, str):
                     raise ValueError
                 setattr(user, key, value)
