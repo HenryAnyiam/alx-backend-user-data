@@ -63,10 +63,10 @@ class DB:
                 elif ((key == "session_id" or key == "reset_token")
                       and not value):
                     pass
-                elif (key == "hashed_password" and
-                      (not isinstance(value, bytes) or
-                       not isinstance(value, str))):
-                    raise ValueError
+                elif key == "hashed_password":
+                    if (not isinstance(value, bytes) and
+                       not isinstance(value, str)):
+                        raise ValueError
                 elif not isinstance(value, str):
                     raise ValueError
                 setattr(user, key, value)
