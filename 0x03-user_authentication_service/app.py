@@ -43,18 +43,29 @@ def login():
             abort(403)
         else:
             AUTH.destroy_session(user.id)
-            redirect(url_for("index"))
-    email = request.form.get("email")
-    password = request.form.get("password")
-    user = AUTH.valid_login(email, password)
+            return redirect(url_for("index"))
+    elif request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        user = AUTH.valid_login(email, password)
+        if user:
+            session_id = AUTH.create_session(email)
+            res = make_response({"email": f"{email}",
+                                 "message": "logged in"})
+            res.set_cookie("session_id", session_id)
+            return res
+        else:
+            abort(401)
+
+
+@app.route("/profile", strict_slashes=False)
+def profile():
+    """return user profile according to session"""
+    cookie = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(cookie)
     if user:
-        session_id = AUTH.create_session(email)
-        res = make_response({"email": f"{email}",
-                             "message": "logged in"})
-        res.set_cookie("session_id", session_id)
-        return res
-    else:
-        abort(401)
+        return jsonify({"email": f"{user.email}"}), 200
+    abort(403)
 
 
 if __name__ == "__main__":
