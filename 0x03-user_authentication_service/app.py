@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """create app"""
 
-from flask import Flask, jsonify, request
-from flask import abort, make_response
+from flask import Flask, jsonify, request, url_for
+from flask import abort, make_response, redirect
 from auth import Auth
 
 
@@ -32,9 +32,18 @@ def users():
         return res, 200
 
 
-@app.route("/sessions", methods=["POST"], strict_slashes=False)
+@app.route("/sessions", methods=["POST", "DELETE"],
+           strict_slashes=False)
 def login():
     """login user"""
+    if request.method == "DELETE":
+        cookie = request.cookies.get("session_id")
+        user = AUTH.get_user_from_session_id(cookie)
+        if not user:
+            abort(403)
+        else:
+            AUTH.destroy_session(user.id)
+            redirect(url_for("index"))
     email = request.form.get("email")
     password = request.form.get("password")
     user = AUTH.valid_login(email, password)
